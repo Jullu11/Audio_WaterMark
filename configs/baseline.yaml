@@ -1,0 +1,19 @@
+# Example baseline config — adjust paths and seeds when wiring real code.
+project:
+  seed: 42
+  output_dir: results
+
+data:
+  manifest_csv: data/processed/manifest_with_split.csv  # from scripts/02_make_splits.py
+
+evaluation:
+  metrics:
+    - VSR
+    - BA
+    - harmful_degree
+    - MCD
+
+# Effective attack definition from proposal (tune if needed)
+thresholds:
+  vsr_max_effective: 0.70
+  ba_min_effective: 0.80

@@ -1,0 +1,14 @@
+{
+  "attack": "gaussian_noise",
+  "attack_params": {
+    "snr_db": 20
+  },
+  "sample_rate": 16000,
+  "subset": "train-clean-100",
+  "split": "test",
+  "n_utterances": 1663,
+  "skipped_unknown_speaker": 0,
+  "accuracy": 0.0703547805171377,
+  "checkpoint": "/Users/jainesh/Downloads/Data pravicy/audio_watermark_robustness/results/speaker_baseline/speaker_cnn.pt",
+  "manifest": "/Users/jainesh/Downloads/Data pravicy/audio_watermark_robustness/data/processed/manifest_with_split.csv"
+}

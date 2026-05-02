@@ -1,0 +1,6 @@
+{
+  "project_root": "/Users/jainesh/Downloads/Data pravicy/audio_watermark_robustness",
+  "checkpoint_relative": "results/speaker_baseline/speaker_cnn.pt",
+  "label_map_relative": "results/speaker_baseline/speaker_label_map.json",
+  "note": "Checkpoint and label map are large / binary-adjacent; kept in speaker_baseline/."
+}

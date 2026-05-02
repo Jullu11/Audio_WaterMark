@@ -1,0 +1,13 @@
+attack,params,accuracy,metrics_json
+none,{},0.8496692723992784,/Users/jainesh/Downloads/Data pravicy/audio_watermark_robustness/results/speaker_baseline/robustness_tmp_00_none.json
+gaussian_noise,"{""snr_db"": 30}",0.13289236319903788,/Users/jainesh/Downloads/Data pravicy/audio_watermark_robustness/results/speaker_baseline/robustness_tmp_01_gaussian_noise.json
+gaussian_noise,"{""snr_db"": 20}",0.06674684305472038,/Users/jainesh/Downloads/Data pravicy/audio_watermark_robustness/results/speaker_baseline/robustness_tmp_02_gaussian_noise.json
+gaussian_noise,"{""snr_db"": 10}",0.037282020444978956,/Users/jainesh/Downloads/Data pravicy/audio_watermark_robustness/results/speaker_baseline/robustness_tmp_03_gaussian_noise.json
+time_stretch,"{""rate"": 1.05}",0.5544197233914612,/Users/jainesh/Downloads/Data pravicy/audio_watermark_robustness/results/speaker_baseline/robustness_tmp_04_time_stretch.json
+time_stretch,"{""rate"": 1.1}",0.5225496091401083,/Users/jainesh/Downloads/Data pravicy/audio_watermark_robustness/results/speaker_baseline/robustness_tmp_05_time_stretch.json
+lowpass,"{""cutoff_hz"": 4000}",0.24353577871316898,/Users/jainesh/Downloads/Data pravicy/audio_watermark_robustness/results/speaker_baseline/robustness_tmp_06_lowpass.json
+lowpass,"{""cutoff_hz"": 2000}",0.17498496692723992,/Users/jainesh/Downloads/Data pravicy/audio_watermark_robustness/results/speaker_baseline/robustness_tmp_07_lowpass.json
+highpass,"{""cutoff_hz"": 200}",0.0926037282020445,/Users/jainesh/Downloads/Data pravicy/audio_watermark_robustness/results/speaker_baseline/robustness_tmp_08_highpass.json
+resample_chain,"{""mid_sr"": 8000}",0.25015033072760073,/Users/jainesh/Downloads/Data pravicy/audio_watermark_robustness/results/speaker_baseline/robustness_tmp_09_resample_chain.json
+quantize,"{""levels"": 256}",0.13108839446782922,/Users/jainesh/Downloads/Data pravicy/audio_watermark_robustness/results/speaker_baseline/robustness_tmp_10_quantize.json
+quantize,"{""levels"": 32}",0.012627781118460614,/Users/jainesh/Downloads/Data pravicy/audio_watermark_robustness/results/speaker_baseline/robustness_tmp_11_quantize.json

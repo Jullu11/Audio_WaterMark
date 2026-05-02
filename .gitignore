@@ -1,0 +1,17 @@
+# Local installers (do not commit)
+Miniconda*.sh
+
+.venv/
+__pycache__/
+*.py[cod]
+.DS_Store
+.matplotlib_cache/
+
+# Large artifacts (keep directory placeholders)
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*.wav
+results/logs/
+*.ckpt
+*.pt
+*.pth
