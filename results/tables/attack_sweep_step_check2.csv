@@ -1,0 +1,4 @@
+model_name,attack,strength,params,BA,VSR,MCD_dB,harmful_degree,n_samples,elapsed_s
+speaker_baseline,gaussian_noise,light,{'snr_db': 30},0.0,1.0,184.5,1.0,16,1.4
+speaker_baseline,gaussian_noise,medium,{'snr_db': 20},0.0,1.0,200.0,1.0,16,0.5
+speaker_baseline,gaussian_noise,heavy,{'snr_db': 10},0.0,1.0,200.0,1.0,16,0.5

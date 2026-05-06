@@ -1,12 +1,15 @@
-"""Unit tests for waveform attack helpers (stdlib only)."""
+"""Unit tests for waveform attack helpers (torch + optional scipy for IIR lowpass)."""
 
 from __future__ import annotations
 
+import importlib.util
 import unittest
 
 import torch
 
 from src.attacks.transforms import apply_waveform_attack
+
+_HAS_SCIPY = importlib.util.find_spec("scipy") is not None
 
 
 class TestWaveformAttacks(unittest.TestCase):
@@ -21,6 +24,7 @@ class TestWaveformAttacks(unittest.TestCase):
         y = apply_waveform_attack(x, "gaussian_noise", sample_rate=16_000, snr_db=40.0)
         self.assertEqual(y.shape, x.shape)
 
+    @unittest.skipUnless(_HAS_SCIPY, "lowpass IIR path requires scipy (see requirements.txt)")
     def test_lowpass_finite(self) -> None:
         x = torch.randn(2, 32000)
         y = apply_waveform_attack(x, "lowpass", sample_rate=16_000, cutoff_hz=3000.0)

@@ -4,6 +4,6 @@
   "n_utterances": 1663,
   "skipped_unknown_speaker": 0,
   "accuracy": 0.8496692723992784,
-  "checkpoint": "/Users/jainesh/Downloads/Data pravicy/audio_watermark_robustness/results/speaker_baseline/speaker_cnn.pt",
-  "manifest": "/Users/jainesh/Downloads/Data pravicy/audio_watermark_robustness/data/processed/manifest_with_split.csv"
+  "checkpoint": "/Users/jainesh/Downloads/Data pravicy/Audio_WaterMark/results/speaker_baseline/speaker_cnn.pt",
+  "manifest": "/Users/jainesh/Downloads/Data pravicy/Audio_WaterMark/data/processed/manifest_with_split.csv"
 }

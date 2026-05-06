@@ -1,0 +1,58 @@
+Device : mps
+
+Model  : speaker_baseline
+Weights: /Users/jainesh/Downloads/Data pravicy/Audio_WaterMark/results/speaker_baseline/speaker_cnn.pt
+Eval utterances: 1663
+
+Collecting clean baseline probs (once) ...
+/Users/jainesh/Downloads/Data pravicy/Audio_WaterMark/.venv/lib/python3.14/site-packages/torch/functional.py:681: UserWarning: An output with one or more elements was resized since it had shape [], which does not match the required output shape [32, 201, 201]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /Users/runner/work/pytorch/pytorch/pytorch/aten/src/ATen/native/Resize.cpp:38.)
+  return _VF.stft(  # type: ignore[attr-defined]
+/Users/jainesh/Downloads/Data pravicy/Audio_WaterMark/.venv/lib/python3.14/site-packages/torch/functional.py:681: UserWarning: An output with one or more elements was resized since it had shape [], which does not match the required output shape [16, 201, 201]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /Users/runner/work/pytorch/pytorch/pytorch/aten/src/ATen/native/Resize.cpp:38.)
+  return _VF.stft(  # type: ignore[attr-defined]
+
+────────────────────────────────────────────────────────────
+Attack : none  strength=baseline  params={}
+/Users/jainesh/Downloads/Data pravicy/Audio_WaterMark/.venv/lib/python3.14/site-packages/scipy/stats/_axis_nan_policy.py:430: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  return hypotest_fun_in(*args, **kwds)
+BA=89.6%  VSR=100.0%  MCD=0.00dB  Harmful=0.104  (2.0s)
+
+────────────────────────────────────────────────────────────
+Attack : gaussian_noise  strength=light  params={'snr_db': 30}
+/Users/jainesh/Downloads/Data pravicy/Audio_WaterMark/.venv/lib/python3.14/site-packages/torch/functional.py:681: UserWarning: An output with one or more elements was resized since it had shape [], which does not match the required output shape [32, 201, 201]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /Users/runner/work/pytorch/pytorch/pytorch/aten/src/ATen/native/Resize.cpp:38.)
+  return _VF.stft(  # type: ignore[attr-defined]
+/Users/jainesh/Downloads/Data pravicy/Audio_WaterMark/.venv/lib/python3.14/site-packages/torch/functional.py:681: UserWarning: An output with one or more elements was resized since it had shape [], which does not match the required output shape [16, 201, 201]. This behavior is deprecated, and in a future PyTorch release outputs will not be resized unless they have zero elements. You can explicitly reuse an out tensor t by resizing it, inplace, to zero elements with t.resize_(0). (Triggered internally at /Users/runner/work/pytorch/pytorch/pytorch/aten/src/ATen/native/Resize.cpp:38.)
+  return _VF.stft(  # type: ignore[attr-defined]
+BA=8.3%  VSR=100.0%  MCD=194.63dB  Harmful=0.917  (0.8s)
+
+────────────────────────────────────────────────────────────
+Attack : gaussian_noise  strength=medium  params={'snr_db': 20}
+BA=10.4%  VSR=100.0%  MCD=200.00dB  Harmful=0.896  (0.8s)
+
+────────────────────────────────────────────────────────────
+Attack : gaussian_noise  strength=heavy  params={'snr_db': 10}
+BA=4.2%  VSR=100.0%  MCD=200.00dB  Harmful=0.958  (0.8s)
+
+────────────────────────────────────────────────────────────
+Attack : resample_chain  strength=light  params={'mid_sr': 16000}
+/Users/jainesh/Downloads/Data pravicy/Audio_WaterMark/.venv/lib/python3.14/site-packages/scipy/stats/_axis_nan_policy.py:430: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  return hypotest_fun_in(*args, **kwds)
+BA=89.6%  VSR=100.0%  MCD=0.00dB  Harmful=0.104  (0.8s)
+
+────────────────────────────────────────────────────────────
+Attack : resample_chain  strength=medium  params={'mid_sr': 8000}
+BA=25.0%  VSR=100.0%  MCD=200.00dB  Harmful=0.750  (0.9s)
+
+────────────────────────────────────────────────────────────
+Attack : resample_chain  strength=heavy  params={'mid_sr': 4000}
+BA=10.4%  VSR=100.0%  MCD=200.00dB  Harmful=0.896  (1.0s)
+
+────────────────────────────────────────────────────────────
+Attack : lowpass  strength=light  params={'cutoff_hz': 4000}
+BA=22.9%  VSR=100.0%  MCD=200.00dB  Harmful=0.771  (0.8s)
+
+────────────────────────────────────────────────────────────
+Attack : lowpass  strength=medium  params={'cutoff_hz': 2000}
+BA=10.4%  VSR=100.0%  MCD=200.00dB  Harmful=0.896  (0.9s)
+
+────────────────────────────────────────────────────────────
+Attack : lowpass  strength=heavy  params={'cutoff_hz': 1000}

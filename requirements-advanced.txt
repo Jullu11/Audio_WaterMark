@@ -1,0 +1,10 @@
+# Optional attacks: pip install -r requirements-advanced.txt
+# Pitch-shift voice_conversion attack:
+librosa>=0.10
+
+# AudioSR (diffusion SR) — large weights, first run may download checkpoints.
+audiosr>=0.0.7
+
+# DeepAFx-ST is not always on PyPI at a stable pin; install from Adobe Research:
+#   pip install "git+https://github.com/adobe-research/DeepAFx-ST.git"
+# Then download USENIX AUDIO WATERMARK checkpoints (deepafx_*.ckpt) per external/audiowatermark.github.io/README.md

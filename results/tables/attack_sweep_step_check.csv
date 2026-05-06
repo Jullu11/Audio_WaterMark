@@ -1,0 +1,2 @@
+model_name,attack,strength,params,BA,VSR,MCD_dB,harmful_degree,n_samples,elapsed_s
+speaker_baseline,none,baseline,{},0.8125,1.0,0.0,0.1875,16,1.7

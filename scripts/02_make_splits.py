@@ -77,6 +77,17 @@ def main() -> int:
         return 1
 
     rows = read_manifest_rows(manifest_path)
+    if not rows:
+        print(
+            "Manifest has no data rows (empty or header-only). "
+            "Fix `01_prepare_manifest.py` first: it must find `*.flac` under "
+            "`--librispeech-root` (usually after `scripts/download_librispeech.py`).\n"
+            "Tip: chain steps so this script does not run if manifest generation fails:\n"
+            "  python scripts/01_prepare_manifest.py ... && python scripts/02_make_splits.py ...",
+            file=sys.stderr,
+        )
+        return 1
+
     eval_test = set(args.eval_as_test)
 
     if args.strategy == "utterance":

@@ -1,0 +1,4 @@
+model_name,attack,strength,params,BA,VSR,MCD_dB,harmful_degree,n_samples,elapsed_s
+speaker_baseline,asr_tts,light,{'quality': 'light'},0.0,1.0,200.0,1.0,16,16.0
+speaker_baseline,asr_tts,medium,{'quality': 'medium'},0.0,1.0,200.0,1.0,16,17.8
+speaker_baseline,asr_tts,heavy,{'quality': 'heavy'},0.0,1.0,200.0,1.0,16,43.5

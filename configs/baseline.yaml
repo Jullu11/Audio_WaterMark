@@ -12,8 +12,3 @@ evaluation:
     - BA
     - harmful_degree
     - MCD
-
-# Effective attack definition from proposal (tune if needed)
-thresholds:
-  vsr_max_effective: 0.70
-  ba_min_effective: 0.80

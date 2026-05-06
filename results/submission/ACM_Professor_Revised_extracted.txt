@@ -1,0 +1,251 @@
+Practical Robustness of Audio Watermarking Under Transformation Attacks: A LibriSpeech-Based Empirical Study
+Jainesh Lunagaria
+UNC Charlotte — Data Privacy CourseCharlotte, NC, USA
+jlunagar@uncc.edu
+ABSTRACT
+Audio watermarking protects speech dataset copyright by embedding invisible attribution signals, enabling owners to verify unauthorized model training through black-box queries. The state-of-the-art AUDIO WATERMARK system reports 95% Verification Success Rate (VSR) under eight benchmark attacks on Linux/CUDA. We present a systematic empirical proxy study on macOS Apple Silicon, evaluating a 251-speaker LibriSpeech CNN baseline (84.97% clean accuracy) under 22 attack settings across eight families. We report benign accuracy (BA), proxy VSR, MCD, and harmful degree at three strength levels each. Zero of 22 attacks achieve the joint effectiveness condition (proxy VSR < 70% AND BA > 80%), consistent with the BA-VSR trade-off hypothesis in this proxy setting. ShrinkPad at medium strength (BA=54.06%, proxy VSR=9.4%) is the sole near-miss. We provide per-attack analysis and practical deployment guidance.
+CCS Concepts
+• Security and privacy → Data anonymization and sanitization; • Information systems → Multimedia information systems.
+Keywords
+Audio watermarking; robustness evaluation; BA-VSR trade-off; LibriSpeech; speaker identification; dataset copyright protection; proxy verification
+INTRODUCTION
+Large-scale speech datasets such as LibriSpeech [14], VoxCeleb [15], and TED-LIUM [16] power modern ASR, TTS, and voice foundation models. These datasets are released for academic use but prohibit commercial deployment without authorization. Enforcing these restrictions is structurally difficult: dataset owners cannot inspect model weights or training logs of a suspicious third-party system.
+Dataset watermarking addresses this by embedding invisible attribution signals into training data. Models trained on watermarked data respond differently to watermarked inputs, enabling black-box ownership verification. AUDIO WATERMARK [1] is the state-of-the-art approach, reporting ~95% VSR under eight attacks on Linux/CUDA. However, practical robustness under modern transformation attacks on constrained development environments remains underexplored.
+This paper presents a proxy empirical study following the comparative evaluation methodology of Reilly and Fan [3], Fan and Gote [5], and Bonomi et al. [4], evaluating 22 attack settings on macOS Apple Silicon. Our contributions are:
+(1) A reproducible LibriSpeech pipeline (28,539 utterances, 251 speakers, BA=84.97%) with multi-metric evaluation across 8 attack families.
+(2) Proxy study evidence that 0/22 attacks achieve the joint effectiveness condition (proxy VSR < 70% AND BA > 80%), consistent with the BA-VSR trade-off hypothesis -- noting that without an embedded watermark the result reflects t-test behavior on a baseline model.
+(3) Identification of ShrinkPad medium (BA=54.06%, proxy VSR=9.4%) as the sole near-miss, with mechanistic analysis explaining its unique behavior.
+(4) Practical "how to choose" guidance for dataset owners and adversaries, following [3] and [5].
+BACKGROUND
+Problem Setting
+We consider two roles: dataset owners (defenders) who embed watermarks into training data D to produce D_w, and adversaries who train models on D_w violating licensing terms. The defender's goal: embed watermark W such that (1) a model trained on D_w exhibits watermark behavior, (2) a clean-trained model does not, and (3) the watermark introduces no exploitable vulnerability (harmlessness condition [1]).
+AUDIO WATERMARK
+Guo et al. [1] address four challenges in prior audio watermarking: harmful backdoors, black-box ineffectiveness, audio quality degradation, and static pattern detectability. Their system uses a Style Wave-U-Net trained with Inversed Contrastive Long-Time Average Fieldprint (LTAF) loss to embed watermarks into speaker-style features, an Audio Effect Synthesizer based on DeepAFX-ST [11] for quality preservation, and bi-level adversarial optimization for black-box transferability. Evaluated on 10 speaker models (VGG-M, ResNet-18, ECAPA-TDNN, and others), it achieves ~95% VSR with harmful degree < 0.06.
+Formal Metric Definitions
+BA (Benign Accuracy): fraction of correct speaker predictions on attacked audio. High BA means the attack preserves downstream task utility. Threshold: BA > 80% required for practical effectiveness.
+BA = (1/|T|) Σᵢ 1[f(x̂ᵢ) = yᵢ]   (1)
+H = 1 − BA = (1/|T|) Σᵢ 1[f(x̂ᵢ) ≠ yᵢ]   (2)
+where 1[·] is the indicator function, x̂_i is attacked audio, y_i is ground-truth speaker label, f is the speaker model, and |T| = 1,663 test utterances.
+Proxy VSR: pairwise t-test on speaker-model softmax probabilities (clean vs. attacked), H_0: P_b = P_v + tau (tau=0.25), 1000 Monte Carlo repeats, n=100 pairs. Fraction of repeats rejecting H_0. Explicitly labeled proxy VSR to distinguish from official AUDIO WATERMARK verifier, following [4]'s separation of formal LDP guarantees from empirical MAP.
+proxy VSR = (1/R) Σᵣ 1[p-value(H₀: μ(P_b) = μ(P_v) + τ) < 0.01],  τ=0.25   (5)
+where R = 1,000 Monte Carlo repeats, P_b and P_v are ground-truth class probabilities for clean and attacked audio, n = 100 sampled pairs per repeat.
+MCD (Mel Cepstral Distortion): MFCC-based spectral distortion in dB. Note: values saturate at 200 dB cap for heavily attacked audio; BA and proxy VSR serve as primary metrics, consistent with [3]'s observation that single generic utility metrics can be misleading.
+MCD = (10/ln 10) √(2/K · Σᵏ (c̃ᵏ − cᵏ)² )  [dB]   (4)
+where K = 13 is the number of MFCC coefficients, c̃_k and c_k are coefficients of attacked and clean audio. Values saturate at 200 dB cap in this implementation.
+Effective Attack Condition (joint): proxy VSR < 70% AND BA > 80% simultaneously. This reflects the realistic adversary who needs a usable model (BA > 80%) while evading verification (VSR < 70%). Attacks satisfying only one condition are not practically useful.
+Effective(a) ⇔ (proxy VSR(a) < 0.70) ∧ (BA(a) > 0.80)   (6)
+RELATED WORK
+Domain Watermark [2] extends attribution to image datasets, motivating data-level watermarking as a cross-modal paradigm. The harmless design principle from [2] directly influenced AUDIO WATERMARK's LTAF-based approach.
+Reilly and Fan [3] compare four differentially private image obfuscation methods (DP-Pix, DP-Samp, DP-SVD, Snow) on CASIA iris and AT&T face datasets. Their systematic epsilon sweeps, multi-metric evaluation (MSE, SSIM, pupil confidence, gaze error, CRR, Re-ID), and "How to choose" practical guidance directly model this study's evaluation design. Key finding: Snow achieves CRR up to 77% after median blur post-processing despite valid DP guarantees, showing formal guarantees and empirical protection can diverge -- the same principle motivating our proxy-vs-official VSR distinction.
+Fan and Gote [5] evaluate seven local online location privacy methods on GeoLife and RioBuses datasets, designing inference and re-identification attacks as empirical privacy measures. Their key finding -- Rounding appears robust against basic re-identification but fails against an improved adversary -- directly motivates our explicit proxy framing. Their "How to choose" section (Section 5) and per-method parameter variation tables are the direct methodological models for Sections 5 and 6 of this paper.
+Bonomi, Gousheh, and Fan [4] propose ClinSimRR for health data sharing, evaluating it on MIMIC-III with formal LDP guarantees, empirical MAP, and LACE readmission case study. Their finding that suppression achieves MAP=1.0 despite removing sensitive elements -- because dependent non-sensitive elements leak information -- models our observation that BA-destroying attacks maintain proxy VSR=100% by amplifying the t-test signal.
+Compared to prior work: AUDIO WATERMARK [1] evaluates 8 attacks on Linux/CUDA, reported in Figure 12 of [1]: STRIP [12], ShrinkPad [13], SCALE-UP [18], Neural Cleanse [19], model fine-tuning, model pruning, and two noise reduction variants. This study covers the signal-level attacks from Figure 12 (STRIP, ShrinkPad, noise/resample variants) but excludes model-level attacks (fine-tuning, pruning, Neural Cleanse [19], SCALE-UP [18]) which require white-box model access incompatible with our proxy setup. We additionally introduce voice_conversion as a novel attack not in Figure 12. The joint BA-VSR effectiveness condition and parameter variation analysis are new contributions not present in the original evaluation.
+METHOD
+Dataset and Model
+Dataset: LibriSpeech train-clean-100, 28,539 utterances, 251 speakers, 16 kHz. Split: utterance-level 85/10/5 train/val/test, seed=42. Test: 1,663 utterances.
+Model (src/models/speaker_cnn.py): LogMelFrontend (n_mels=80, n_fft=400, hop=160, f_min=20 Hz, f_max=7600 Hz) + SpeakerCNN (3x Conv2d+BatchNorm+ReLU+MaxPool, 1->32->64->128 channels, AdaptiveAvgPool, Linear). ~450K parameters. Trained: cross-entropy, Adam lr=1e-3, 50 epochs, batch=32. Clean test BA: 84.97%.
+Attack Framework
+All attacks are implemented in src/attacks/transforms.py under a common interface apply_waveform_attack(wav, attack, sr, **kw), following the comparable-implementation principle of [5]. The 8 attack families at 3 strength levels (22 settings total):
+(1) gaussian_noise: SNR 30/20/10 dB -- power-matched additive white Gaussian noise.
+SNR_dB = 10 · log₁₀(P_signal / P_noise)   (3)
+(2) resample_chain: 16k/8k/4k Hz -- downsample then upsample via torchaudio.
+(3) lowpass: 4000/2000/1000 Hz cutoff -- 4th-order Butterworth IIR filter.
+(4) quantize: L=256/64/16 -- uniform scalar quantization on [-1, 1].
+(5) STRIP [12]: blend=0.05/0.10/0.20 -- linear blend with Gaussian noise; evaluated in [1] Figure 12 as a detection baseline.
+(6) ShrinkPad: ratio=0.95/0.90/0.80 -- interpolate to ratio*T then zero-pad back to T; evaluated in [1] Figure 12 as a data-level defense [13].
+ShrinkPad(x, r) = Pad(Interp(x, ⌊r·T⌋), T),   r ∈ {0.95, 0.90, 0.80}   (7)
+(7) voice_conversion: 1/3/5 semitones -- pitch shift via librosa PSOLA.
+f' = f · 2^(n/12),   n ∈ {1, 3, 5}  [semitones]   (8)
+(8) asr_tts and deepfilter: implemented but failed due to macOS dependency issues (ffmpeg missing; torchaudio.backend removed in v2.x). Documented explicitly.
+Extended Exploration
+Beyond the 22-setting primary sweep, we also evaluated time_stretch (rate=1.05: BA=55.44%, rate=1.10: BA=52.25%) and highpass (cutoff=200 Hz: BA=9.26%) from the robustness_sweep_deduped.csv. Time-stretch is the most utility-preserving attack overall.
+Evaluation Protocol
+The sweep script (11_watermark_attack_sweep.py) loads the model checkpoint once, collects clean baseline probabilities in a single forward pass, then applies each attack-parameter pair sequentially. Platform: macOS Apple Silicon M4, Python 3.14, PyTorch 2.11, MPS backend. This ensures all conditions compare against an identical clean baseline.
+RESULTS
+Complete 22-Setting Sweep
+Table 1 reports all 22 attack settings. The clean baseline achieves BA=84.97%, proxy VSR=100.0%, harmful degree=0.150. Zero of 22 settings achieve the joint effectiveness condition. ShrinkPad medium (row highlighted) is the closest near-miss.
+Table 1: Complete Attack Sweep Results (22 Settings)
+Attack
+Strength
+BA
+Proxy VSR
+Harmful
+none
+baseline
+84.97%
+100.0%
+0.150
+gaussian_noise
+30dB SNR
+13.47%
+100.0%
+0.865
+gaussian_noise
+20dB SNR
+6.61%
+100.0%
+0.934
+gaussian_noise
+10dB SNR
+3.73%
+100.0%
+0.963
+resample_chain
+16kHz
+84.97%
+100.0%
+0.150
+resample_chain
+8kHz
+25.02%
+100.0%
+0.750
+resample_chain
+4kHz
+15.63%
+100.0%
+0.844
+lowpass
+4kHz
+24.35%
+100.0%
+0.757
+lowpass
+2kHz
+17.50%
+100.0%
+0.825
+lowpass
+1kHz
+10.76%
+100.0%
+0.892
+quantize
+L=256
+13.11%
+100.0%
+0.869
+quantize
+L=64
+2.89%
+100.0%
+0.971
+quantize
+L=16
+0.48%
+100.0%
+0.995
+STRIP
+b=0.05
+2.04%
+100.0%
+0.980
+STRIP
+b=0.10
+1.26%
+100.0%
+0.987
+STRIP
+b=0.20
+0.42%
+100.0%
+0.996
+ShrinkPad
+r=0.95
+64.64%
+14.1%
+0.354
+ShrinkPad
+r=0.90
+54.06%
+9.4%
+0.459
+ShrinkPad
+r=0.80
+30.49%
+100.0%
+0.695
+voice_conv
+s=1
+21.11%
+100.0%
+0.789
+voice_conv
+s=3
+14.49%
+100.0%
+0.855
+voice_conv
+s=5
+11.18%
+100.0%
+0.888
+*ShrinkPad light (BA=64.64%, VSR=14.1%) and medium (BA=54.06%, VSR=9.4%) are the only settings where proxy VSR drops below 100%. Effective condition: VSR<70% AND BA>80%. 0/22 satisfy this joint condition.
+Comparison to Figure 12 of [1]: AUDIO WATERMARK reports that in Figure 12, STRIP and ShrinkPad both produce VSR near 95% (watermark survives) under the official verifier on the watermarked model. Our proxy evaluation is consistent for STRIP -- proxy VSR=100% across all three blend strengths, supporting the finding that the watermark-style signal is preserved under perturbation. For ShrinkPad, our proxy study finds proxy VSR drops to 9.4-14.1% at light/medium compression, suggesting temporal distortion selectively disrupts the t-test statistic in ways that spectral attacks do not. This discrepancy between our proxy VSR result and [1] Figure 12 official VSR for ShrinkPad is an important finding: it may indicate that our proxy metric and the official verifier measure different signals, or that the absence of an embedded watermark in our proxy model changes ShrinkPad behavior. Model-level Figure 12 attacks (fine-tuning, pruning, Neural Cleanse [19], SCALE-UP [18]) require white-box model access and are out of scope for a data-level signal processing evaluation; they are noted as future work requiring the official Linux/CUDA pipeline.
+Varying Attack Parameters
+Following the parameter variation tables of [3] (Tables II-IX) and [5] (Tables 3-9), Table 2 shows additional parameter values from the robustness_sweep_deduped.csv results. Note: proxy VSR was not computed for these extended settings (time_stretch, highpass) as these attacks were evaluated in an earlier sweep using only BA metrics; adding them to the 22-setting proxy VSR sweep is identified as future work.
+Table 2: Extended Parameter Variation Results
+Attack
+Parameter
+BA
+Trend
+time_stretch
+rate=1.05
+55.44%
+Moderate BA drop; best utility among non-ShrinkPad
+time_stretch
+rate=1.10
+52.25%
+Slight further degradation
+highpass
+cut=200Hz
+9.26%
+Removes fundamentals; strong speaker ID damage
+gaussian_noise
+snr=30dB
+13.29%
+Sharp BA collapse even at mild noise
+quantize
+L=32
+1.26%
+Near-total collapse; coarse quantization
+BA by Attack Family
+Consistent with [3]'s finding that increasing privacy level monotonically reduces utility, increasing attack strength uniformly reduces BA. STRIP collapses BA to below 3% across all strengths. ShrinkPad shows the most gradual BA degradation (64.6% to 30.5%), making it the most utility-preserving attack. Only resample_chain at light strength (16 kHz, equivalent to a no-op at 16 kHz input) preserves BA above 80%.
+Figure 1: BA by attack family. Red dashed = 80% threshold. ShrinkPad most gradual; STRIP near-zero across all strengths
+Proxy VSR by Attack Family
+Proxy VSR remains at 100.0% for 20 of 22 settings across 6 of 7 attack families, analogous to [5]'s finding that several location privacy methods fail to reduce re-identification risk despite high distortion. ShrinkPad is the sole exception. The non-monotonic ShrinkPad behavior (light: 14.1%, medium: 9.4%, heavy: 100%) is analogous to the "elbow point" behavior documented in [3] for DP-Pix.
+Figure 2: BA-VSR scatter, all 22 settings. Green region = effective zone. 0/22 enter it. ShrinkPad medium (BA=54.1%, VSR=9.4%) is nearest miss.
+DISCUSSION AND CONCLUSIONS
+Why Proxy VSR Is Robust
+The pairwise t-test detects whether the attacked distribution differs from the clean distribution shifted by tau. Attacks that reduce BA do so by shifting all class probabilities downward -- making the distributions more different, not less. This creates a structural coupling: perturbations that destroy BA simultaneously amplify the t-test signal. Escaping this requires selectively targeting the verification-relevant distribution component while leaving classification features intact, which ShrinkPad partially achieves through temporal rather than spectral distortion.
+It is important to acknowledge a circularity in this finding: the proxy VSR metric was constructed using a t-test on softmax distributions, and BA-destroying attacks by definition shift those distributions dramatically. The conclusion that proxy VSR is structurally robust therefore partially reflects the metric's own construction rather than exclusively measuring watermark robustness properties. This is precisely why proxy VSR cannot be equated with official verifier robustness, and why official verification on a genuinely watermarked model remains the necessary next step to validate these findings.
+ShrinkPad: Mechanistic Analysis
+ShrinkPad compresses audio to ratio*T then zero-pads. At moderate compression (90-95%), temporal distortion shifts the softmax distribution in a pattern the t-test cannot reject (VSR drops to 9-14%). At heavy compression (80%), uniformly low-confidence outputs make both clean and attacked distributions uninformative -- H_0 fails to reject, returning VSR to 100%. This non-monotonic reversal at r=0.80 is the most analytically interesting result in the study. When the model receives 80% speech content followed by 20% silence, the softmax output over 251 speaker classes approaches a near-uniform distribution (all probabilities near 1/251 = 0.4%). The t-test comparing two such near-uniform distributions finds no statistically significant difference -- not because the watermark survived, but because the signal has become indistinguishable from noise. This suggests two distinct regimes: a moderate compression regime (r=0.90-0.95) where temporal distortion specifically disrupts the t-test statistic, and a heavy compression regime (r=0.80) where the audio is so degraded that the metric loses discriminative power entirely. A practical adversary using ShrinkPad should therefore target the moderate regime, but at the cost of BA=54-65% -- still below the effectiveness threshold. The 26 percentage-point gap between ShrinkPad medium's BA (54.06%) and the 80% effectiveness threshold is the key quantitative finding of this study: a practical effective attack would require either a compression ratio finer than r=0.90, or a mechanism that selectively disrupts the LTAF-style verification signal without destroying speaker classification features.
+How to Choose
+Following [3] Section V-B and [5] Section 5: For dataset owners, results suggest common waveform attacks fail to disrupt verification without destroying utility. For adversaries seeking to evade detection, ShrinkPad medium is the best available option at significant utility cost (BA=54%). No attack achieves the joint effectiveness condition. There is no "one size fits all" attack [3] that simultaneously achieves low VSR and high BA.
+Proxy vs. Official VSR
+Following [4]'s distinction of formal LDP from empirical MAP: proxy VSR is not equivalent to official AUDIO WATERMARK verifier VSR. The official verifier detects an embedded LTAF style signal in model weights; proxy VSR detects statistical differences in softmax distributions. Proxy VSR=100% under BA-destroying attacks does not confirm the official watermark would survive -- it confirms the t-test detects a different signal.
+Limitations and Future Work
+Key limitations: (1) proxy VSR != official verifier; (2) single LibriSpeech dataset -- VoxCeleb evaluation deferred; (3) single CNN architecture -- ResNet-18, VGG-M, ECAPA-TDNN deferred; (4) asr_tts and deepfilter attacks failed due to macOS dependencies. Future work: (1) official verify_watermark.py on Linux/CUDA; (2) fine-grained ShrinkPad sweep (ratios 0.85-0.99) to map the near-miss region; (3) resolve asr_tts (brew install ffmpeg) and deepfilter (pin torchaudio); (4) multi-model evaluation; (5) PESQ/STOI metrics replacing MCD.
+Conclusions
+We evaluated AUDIO WATERMARK robustness under 22 attack settings following the comparative evaluation methodology of [3, 4, 5]. Zero of 22 attacks achieve the joint effectiveness condition (proxy VSR < 70% AND BA > 80%), consistent with the BA-VSR trade-off: attacks powerful enough to disrupt verification also destroy model utility, though this finding reflects t-test behavior on a proxy model rather than official watermark verification. ShrinkPad medium (BA=54.06%, proxy VSR=9.4%) is the notable near-miss, suggesting temporal compression warrants further investigation as a targeted attack vector. The study provides a reproducible proxy baseline and identifies the path to stronger validation through official verifier integration on Linux/CUDA.
+REFERENCES
+H. Guo et al., "Audio Watermark: Dynamic and Harmless Watermark for Black-box Voice Dataset Copyright Protection," USENIX Security 2025.
+J. Guo et al., "Domain Watermark: Effective and Harmless Dataset Copyright Protection is Closed at Hand," NeurIPS 2024.
+D. Reilly and L. Fan, "A Comparative Evaluation of Differentially Private Image Obfuscation," IEEE TPS-ISA 2021, pp. 80-89.
+L. Bonomi, S. Gousheh, and L. Fan, "Enabling Health Data Sharing with Fine-Grained Privacy," CIKM 2023.
+L. Fan and I. Gote, "A Closer Look: Evaluating Location Privacy Empirically," ACM SIGSPATIAL 2021.
+J. Li et al., "FreeVC: Towards High-Quality Text-Free One-Shot Voice Conversion," IEEE ICASSP 2023.
+M. Baas, B. van Niekerk, H. Kamper, "Voice Conversion With Just Nearest Neighbors," Interspeech 2023.
+A. Radford et al., "Robust Speech Recognition via Large-Scale Weak Supervision," ICML 2023.
+H. Liu et al., "AudioSR: Versatile Audio Super-Resolution at Scale," arXiv:2309.07314, 2023.
+H. Schroter et al., "DeepFilterNet: A Low Complexity Speech Enhancement Framework," ICASSP 2022.
+C. J. Steinmetz et al., "Style Transfer of Audio Effects with Differentiable Signal Processing," arXiv:2207.08759, 2022.
+Y. Gao et al., "STRIP: A Defence Against Trojan Attacks on Deep Neural Networks," ACSAC 2019.
+K. Hayase et al., "SPECTRE: Defending Against Backdoor Attacks Using Robust Covariance Estimation," ICML 2021. (ShrinkPad defense adapted from temporal distortion augmentations.)
+V. Panayotov et al., "LibriSpeech: An ASR Corpus Based on Public Domain Audio Books," IEEE ICASSP 2015.
+A. Nagrani, J. S. Chung, A. Zisserman, "VoxCeleb: A Large-Scale Speaker Identification Dataset," arXiv:1706.08612, 2017.
+A. Rousseau et al., "TED-LIUM: An ASR Dedicated Corpus," LREC 2012.
+R. Shokri et al., "Membership Inference Attacks Against Machine Learning Models," IEEE S&P 2017.
+Y. Guo et al., "SCALE-UP: An Efficient Black-box Input-level Backdoor Detection via Analyzing Scaled Prediction Consistency," in Proc. ICLR, 2023
+B. Wang et al., "Neural Cleanse: Identifying and Mitigating Backdoor Attacks in Neural Networks," in Proc. IEEE S&P, 2019.

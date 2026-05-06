@@ -104,6 +104,13 @@ def verify_gzip_archive(path: Path) -> None:
         ) from e
 
 
+def _count_flac_files(root: Path) -> int:
+    """Count ``*.flac`` under ``root`` (non-recursive edge cases yield 0)."""
+    if not root.is_dir():
+        return 0
+    return sum(1 for _ in root.rglob("*.flac"))
+
+
 def download_subset(
     subset: str,
     download_root: Path,
@@ -125,8 +132,15 @@ def download_subset(
     """
     url = subset_url(subset)
     out_root = extracted_subset_root(download_root, subset)
+    # Do not skip download/extract when a stale folder exists but contains no audio.
     if extract and out_root.is_dir() and any(out_root.iterdir()) and not force:
-        return out_root
+        if _count_flac_files(out_root) > 0:
+            return out_root
+        print(
+            f"Warning: {out_root} exists but contains no .flac files; "
+            "re-extracting from the archive …",
+            file=sys.stderr,
+        )
 
     tgz = archive_path(download_root, subset)
     if not tgz.is_file() or force:
@@ -158,6 +172,13 @@ def download_subset(
 
     if not out_root.is_dir():
         raise LibrispeechDownloadError(f"Expected extracted directory missing: {out_root}")
+
+    n_flac = _count_flac_files(out_root)
+    if n_flac == 0:
+        raise LibrispeechDownloadError(
+            f"Extraction finished but found 0 .flac files under {out_root}. "
+            f"Remove that folder and {tgz}, then run download_librispeech.py with --force."
+        )
     return out_root
 
 
@@ -190,9 +211,15 @@ def iter_flac_utterances(librispeech_root: Path) -> Iterator[LibrispeechUtteranc
     for flac in sorted(root.rglob("*.flac")):
         rel = flac.relative_to(root)
         parts = rel.parts
-        if len(parts) != 4:
+        # Normal layout: ``<subset>/<speaker>/<chapter>/<file>.flac`` (4 parts) under ``LibriSpeech/``.
+        # If users pass ``--librispeech-root data/raw`` instead of ``.../LibriSpeech``, paths look like
+        # ``LibriSpeech/<subset>/<speaker>/<chapter>/<file>.flac`` (5 parts) — accept that too.
+        if len(parts) == 5 and parts[0] == "LibriSpeech":
+            subset, speaker_id, chapter_id, name = parts[1], parts[2], parts[3], parts[4]
+        elif len(parts) == 4:
+            subset, speaker_id, chapter_id, name = parts
+        else:
             continue
-        subset, speaker_id, chapter_id, name = parts
         stem = Path(name).stem
         yield LibrispeechUtterance(
             path=flac,

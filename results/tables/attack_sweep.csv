@@ -1,0 +1,23 @@
+model_name,attack,strength,params,BA,VSR,MCD_dB,harmful_degree,n_samples,elapsed_s
+speaker_baseline,none,baseline,{},0.8497,1.0,0.0,0.1503,1663,10.0
+speaker_baseline,gaussian_noise,light,{'snr_db': 30},0.1347,1.0,194.72,0.8653,1663,10.1
+speaker_baseline,gaussian_noise,medium,{'snr_db': 20},0.0661,1.0,200.0,0.9339,1663,9.2
+speaker_baseline,gaussian_noise,heavy,{'snr_db': 10},0.0373,1.0,200.0,0.9627,1663,9.9
+speaker_baseline,resample_chain,light,{'mid_sr': 16000},0.8497,1.0,0.0,0.1503,1663,9.9
+speaker_baseline,resample_chain,medium,{'mid_sr': 8000},0.2502,1.0,200.0,0.7498,1663,12.3
+speaker_baseline,resample_chain,heavy,{'mid_sr': 4000},0.1563,1.0,200.0,0.8437,1663,11.7
+speaker_baseline,lowpass,light,{'cutoff_hz': 4000},0.2435,1.0,200.0,0.7565,1663,11.1
+speaker_baseline,lowpass,medium,{'cutoff_hz': 2000},0.175,1.0,200.0,0.825,1663,11.4
+speaker_baseline,lowpass,heavy,{'cutoff_hz': 1000},0.1076,1.0,200.0,0.8924,1663,11.6
+speaker_baseline,quantize,light,{'levels': 256},0.1311,1.0,198.17,0.8689,1663,9.5
+speaker_baseline,quantize,medium,{'levels': 64},0.0289,1.0,200.0,0.9711,1663,9.0
+speaker_baseline,quantize,heavy,{'levels': 16},0.0048,1.0,200.0,0.9952,1663,8.8
+speaker_baseline,strip,light,{'blend': 0.05},0.0204,1.0,200.0,0.9796,1663,8.9
+speaker_baseline,strip,medium,{'blend': 0.1},0.0126,1.0,200.0,0.9874,1663,9.5
+speaker_baseline,strip,heavy,{'blend': 0.2},0.0042,1.0,200.0,0.9958,1663,9.1
+speaker_baseline,shrinkpad,light,{'ratio': 0.95},0.6464,0.141,199.83,0.3536,1663,9.2
+speaker_baseline,shrinkpad,medium,{'ratio': 0.9},0.5406,0.094,200.0,0.4594,1663,8.9
+speaker_baseline,shrinkpad,heavy,{'ratio': 0.8},0.3049,1.0,200.0,0.6951,1663,9.0
+speaker_baseline,voice_conversion,light,{'n_steps': 1},0.2111,1.0,199.5,0.7889,1663,24.2
+speaker_baseline,voice_conversion,medium,{'n_steps': 3},0.1449,1.0,200.0,0.8551,1663,25.1
+speaker_baseline,voice_conversion,heavy,{'n_steps': 5},0.1118,1.0,200.0,0.8882,1663,26.4

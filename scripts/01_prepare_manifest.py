@@ -56,6 +56,20 @@ def main() -> int:
         subsets=list(args.subsets) if args.subsets else None,
     )
     print(f"Wrote {n} rows to {args.out.resolve()}")
+    if n == 0:
+        flacs = list(root.rglob("*.flac"))
+        print(
+            "ERROR: Found 0 LibriSpeech utterances. Expected FLAC paths like "
+            "`<subset>/<speaker>/<chapter>/*.flac` under the LibriSpeech root.\n"
+            "  • Pass `--librispeech-root` to the folder that **contains** "
+            "`train-clean-100/` (usually `data/raw/LibriSpeech`).\n"
+            "  • If you pointed at `data/raw`, either rerun with "
+            "`--librispeech-root .../data/raw/LibriSpeech` or use only `data/raw` "
+            "(this repo now accepts the extra `LibriSpeech/` prefix in paths).\n"
+            f"  • FLAC files seen under this root: {len(flacs)}.",
+            file=sys.stderr,
+        )
+        return 1
     return 0
 
 
