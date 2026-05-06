@@ -143,9 +143,6 @@ PYTHONPATH=. python scripts/14_run_official_watermark.py --task verify_generate
 PYTHONPATH=. python scripts/14_run_official_watermark.py --task verify_eval
 ```
 
-## After experiments: paper + submission
-
-See **`NEXT_STEPS.md`** (checklist: narrative, figure refresh, ACM outline, final zip/PDF).
 
 ## Reproducing the report
 
